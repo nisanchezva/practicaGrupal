@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Esto es para hacer checkout del código desde el repositorio de Git
-                git 'https://github.com/nisanchezva/practicaJenkins.git' // Cambia esta URL por tu repositorio si es necesario
+                git 'https://github.com/nisanchezva/practicaGrupal' // Cambia esta URL por tu repositorio si es necesario
             }
         }
 
