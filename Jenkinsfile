@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Obtener el valor de salida 'public_key_output' y mostrarlo
-                    def publicKey = sh(script: "cat ${SSH_PUB_KEY}", returnStdout: true).trim()
+                    def publicKey = sh(script: 'terraform output -raw public_key_output', returnStdout: true).trim()
                     echo "Public Key: ${publicKey}"
                 }
             }

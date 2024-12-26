@@ -6,5 +6,5 @@ variable "public_key" {
 
 # Recurso (aunque no estamos creando nada, solo vamos a imprimir la clave pública)
 output "public_key_output" {
-  value = var.public_key
+  value = file(var.public_key)
 }
