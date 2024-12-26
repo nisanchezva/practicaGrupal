@@ -1,10 +1,5 @@
 pipeline {
     agent any
-
-    environment {
-        // Aquí no necesitamos definir ninguna variable adicional, se gestiona en withCredentials
-    }
-
     stages {
         stage('Checkout') {
             steps {
