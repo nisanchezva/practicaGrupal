@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      containers:
+      - name: tomcat
+        image: tomcat:9.0
+        command:
+          - "sh"
+          - "-c"
+          - >
+            curl https://raw.githubusercontent.com/nisanchezva/practicaGrupal/main/HelloWorld.war -o /usr/local/tomcat/webapps/HelloWorld.war && catalina.sh run
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "150Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: webapps-volume
+          mountPath: /usr/local/tomcat/webapps
+      volumes:
+      - name: webapps-volume
+        persistentVolumeClaim:
+          claimName: war-pvc
