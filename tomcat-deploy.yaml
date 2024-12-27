@@ -24,10 +24,10 @@ spec:
         - containerPort: 8080
         resources:
           requests:
-            cpu: "25m"
+            cpu: "250m"
             memory: "150Mi"
           limits:
-            cpu: "50m"
+            cpu: "500m"
             memory: "512Mi"
         volumeMounts:
         - name: webapps-volume
