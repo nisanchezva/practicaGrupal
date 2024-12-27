@@ -28,7 +28,7 @@ pipeline {
                     // Aquí cargamos la clave pública desde Jenkins y la pasamos como variable a Terraform
                     withCredentials([file(credentialsId: 'NOMBRE DE LA VARIABLE AQUI', variable: 'SSH_PUB_KEY')]) {
                         sh """
-                            terraform apply -auto-approve -var "public_key=${SSH_PUB_KEY}"
+                            terraform ${action} --auto-approve -var "public_key=${SSH_PUB_KEY}"
                         """
                     }
                 }

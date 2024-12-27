@@ -193,6 +193,52 @@ spec:
   - port: 9090
     targetPort: 9090
 ---
+# grafana-secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin-credentials
+  namespace: monitoring
+type: Opaque
+data:
+  admin-user: YWRtaW4=
+  admin-password: R3JhZmFuYTAwNzg5
+# grafana-configmap
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provisioning
+  namespace: monitoring
+data:
+  provider.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards
+---
+# grafana configmap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource
+  namespace: monitoring
+data:
+  prometheus-datasource.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-service:9090
+      isDefault: true
+      uid: prometheus
+---
 # grafana-deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -215,6 +261,16 @@ spec:
         ports:
         - containerPort: 3000
         env:
+        - name: GF_SECURITY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: grafana-admin-credentials
+              key: admin-user
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: grafana-admin-credentials
+              key: admin-password
         - name: GF_AUTH_ANONYMOUS_ENABLED
           value: "true"
         - name: GF_AUTH_ANONYMOUS_ORG_ROLE
@@ -229,7 +285,22 @@ spec:
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
+        - name: grafana-dashboard-provisioning
+          mountPath: /etc/grafana/provisioning/dashboards
+        - name: grafana-dashboard-volume
+          mountPath: /var/lib/grafana/dashboards
+        - name: grafana-datasource-volume
+          mountPath: /etc/grafana/provisioning/datasources
       volumes:
+      - name: grafana-dashboard-volume
+        configMap:
+          name: grafana-dashboard
+      - name: grafana-dashboard-provisioning
+        configMap:
+          name: grafana-dashboard-provisioning
+      - name: grafana-datasource-volume
+        configMap:
+          name: grafana-datasource
       - name: grafana-storage
         emptyDir: {}
 ---
@@ -247,3 +318,4 @@ spec:
     targetPort: 3000
     nodePort: 30000
   type: LoadBalancer
+
